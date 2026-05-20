@@ -28,7 +28,7 @@ export const useItemQueries = {
     useItemDetail: (id: number | string) => {
         return useQuery({
             queryKey: ["itemDetail", id],
-            queryFn: () => itemService.getItemDetail(id),
+            queryFn: () => itemService.getItemPost(id),
             enabled: !!id,
         });
     },

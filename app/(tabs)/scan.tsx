@@ -1,6 +1,9 @@
 import { lockerService } from "@/api/services/locker";
+import { userService } from "@/api/services/user";
+import { ApiResponse, CreateChatRoomResult, ScanOwnerResult } from "@/api/types";
 import { fonts } from "@/constants/typography";
 import { ROUTES } from "@/constants/url";
+import { useChatMutations } from "@/hooks/mutations/useChatMutations";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,9 +35,7 @@ type ModalType = "owner" | "locker_success" | "locker_fail" | null;
 
 type OwnerInfo = {
   nickname: string;
-  department: string;
-  itemName: string;
-  itemId?: number;
+  ownerId: number;
 };
 
 export default function QRScanScreen() {
@@ -49,6 +50,8 @@ export default function QRScanScreen() {
   const [lockerErrorMsg, setLockerErrorMsg] = useState<string>("");
   const [lockerReady, setLockerReady] = useState(false);
   const isProcessing = useRef(false);
+
+  const createChatRoomByOwnerMutation = useChatMutations.useCreateChatRoomByOwner();
 
   useEffect(() => {
     if (modalType !== "locker_success") return;
@@ -103,6 +106,16 @@ export default function QRScanScreen() {
         }
         return;
       }
+      const userMatch = data.match(/\/scan\/owner\/(\d+)/)
+      if (userMatch) {
+        const response: ApiResponse<ScanOwnerResult> = await userService.scanQrCode(data);
+        setOwnerInfo({
+          ownerId: response.data.owner_id,
+          nickname: response.data.nickname,
+        });
+        setModalType('owner');
+        return;
+      }
 
       const parsed = JSON.parse(data);
 
@@ -125,15 +138,7 @@ export default function QRScanScreen() {
       }
       // 물건 QR (ownerQR)
       // TODO: 백엔드 QR 데이터 형태 확인 후 조건 수정
-      else if (parsed.type === "item") {
-        setOwnerInfo({
-          nickname: parsed.nickname ?? "알 수 없음",
-          department: parsed.department ?? "",
-          itemName: parsed.itemName ?? "물건",
-          itemId: parsed.itemId,
-        });
-        setModalType("owner");
-      } else {
+      else {
         Alert.alert("알 수 없는 QR", "인식할 수 없는 QR 코드예요.");
       }
     } catch {
@@ -159,8 +164,7 @@ export default function QRScanScreen() {
         onPress: () => {
           setOwnerInfo({
             nickname: "김민준",
-            department: "컴퓨터공학과",
-            itemName: "학생증",
+            ownerId: 1
           });
           setModalType("owner");
         },
@@ -177,15 +181,20 @@ export default function QRScanScreen() {
     ]);
   };
 
-  const handleChat = () => {
+  const handleChat = async () => {
     setModalType(null);
-    if (ownerInfo?.itemId) {
-      router.push({
-        pathname: ROUTES.CHAT_ROOM,
-        params: { itemId: ownerInfo.itemId },
-      } as any);
-    } else {
-      router.push(ROUTES.CHAT as any);
+    if (ownerInfo) {
+      createChatRoomByOwnerMutation.mutate({
+        owner_id: ownerInfo.ownerId
+      }, {
+        onSuccess: (response: ApiResponse<CreateChatRoomResult>) => {
+          const roomId: number = response.data.room_data.room_id;
+          router.push({
+            pathname: ROUTES.CHAT_ROOM,
+            params: { roomId }
+          });
+        }
+      });
     }
   };
 
@@ -327,13 +336,8 @@ export default function QRScanScreen() {
               <User size={32} color="#aaa" />
             </View>
             <Text style={styles.ownerName}>{ownerInfo?.nickname}</Text>
-            <Text style={styles.ownerDept}>{ownerInfo?.department}</Text>
             <Text style={styles.ownerDesc}>
-              {ownerInfo?.nickname}님의 잃어버린 물건{" "}
-              <Text style={styles.ownerItem}>
-                &ldquo;{ownerInfo?.itemName}&rdquo;
-              </Text>{" "}
-              을(를) 찾으셨나요?
+              {ownerInfo?.nickname}님의 잃어버린 물건을 찾으셨나요?
             </Text>
             <TouchableOpacity
               style={styles.chatBtn}

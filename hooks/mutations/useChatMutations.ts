@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { chatService } from "../../api/services/chat";
 import {
   ApiResponse,
+  CreateChatRoomByOwnerRequest,
   CreateChatRoomRequest,
   ListMessagesResult,
   MessageRecord,
@@ -18,6 +19,17 @@ export const useChatMutations = {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.rooms });
       },
+    });
+  },
+
+  useCreateChatRoomByOwner: () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: (data: CreateChatRoomByOwnerRequest) => 
+        chatService.createChatRoomByOwner(data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: CHAT_QUERY_KEYS.rooms });
+      }
     });
   },
 

@@ -60,29 +60,29 @@ export default function LostItemDetail() {
   const { data: buildingsRes } = useMetadataQueries.useBuildings();
   const apiBuildings = buildingsRes?.data?.data ?? [];
 
-  const item = response?.success ? response.data : null;
+  const itemPost = response?.success ? response.data : null;
 
-  const imageUrl = item?.image_url
-    ? item.image_url.startsWith("http")
-      ? item.image_url
-      : `${BASE_URL}${item.image_url}`
+  const imageUrl = itemPost?.image_url
+    ? itemPost.image_url.startsWith("http")
+      ? itemPost.image_url
+      : `${BASE_URL}${itemPost.image_url}`
     : null;
 
   // 채팅 버튼 클릭 핸들러 (테스트용 ID 하드코딩)
   const handleChatPress = useCallback(() => {
-    if (!item) return;
+    if (!itemPost) return;
 
-    console.log("reporter_id:", item.reporter_id); // 추가!
+    console.log("reporter_id:", itemPost.reporter_id); // 추가!
     console.log("=== 채팅 생성 테스트 시작 ===");
-    console.log("아이템 ID:", item.id);
+    console.log("아이템 ID:", itemPost.item_id);
 
     createChatRoomMutation.mutate(
       {
-        item_id: item.id,
+        item_id: itemPost.item_id,
         // 테스트를 위해 에뮬레이터 계정 ID를 1로 가정하고 하드코딩합니다.
         //counterpart_id: 1,
         // reporter_id 추가되면
-        counterpart_id: item.reporter_id ?? 0,
+        counterpart_id: itemPost.reporter_id ?? 0,
       },
       {
         onSuccess: (res) => {
@@ -105,18 +105,18 @@ export default function LostItemDetail() {
         },
       },
     );
-  }, [item, createChatRoomMutation, router]);
+  }, [itemPost, createChatRoomMutation, router]);
 
   const handleShare = async () => {
-    if (!item) return;
+    if (!itemPost) return;
     const sharedBuildingName =
-      apiBuildings.find((b) => b.id === item.building_id)?.name ?? "";
-    const locationText = item.data_address
-      ? `${sharedBuildingName} · ${item.data_address}`
+      apiBuildings.find((b) => b.id === itemPost.building_id)?.name ?? "";
+    const locationText = itemPost.data_address
+      ? `${sharedBuildingName} · ${itemPost.data_address}`
       : sharedBuildingName;
     try {
       await Share.share({
-        message: `[줍픽] ${item.title ?? "분실물"} - ${locationText}`,
+        message: `[줍픽] ${itemPost.title ?? "분실물"} - ${locationText}`,
       });
     } catch {
       Alert.alert("공유 실패");
@@ -152,7 +152,7 @@ export default function LostItemDetail() {
     );
   }
 
-  if (!item) {
+  if (!itemPost) {
     return (
       <View
         style={[
@@ -175,15 +175,15 @@ export default function LostItemDetail() {
     );
   }
 
-  const korCategory = CATEGORY_MAP[item.category] ?? "기타";
-  const IconComponent = CATEGORY_ICON_MAP[item.category] ?? Package;
-  const isTheftConfirmed = item.status === "THEFT_CONFIRMED";
+  const korCategory = CATEGORY_MAP[itemPost.category] ?? "기타";
+  const IconComponent = CATEGORY_ICON_MAP[itemPost.category] ?? Package;
+  const isTheftConfirmed = itemPost.status === "THEFT_CONFIRMED";
   const statusStyle = (isTheftConfirmed
     ? ITEM_STATUS_STYLE.THEFT_CONFIRMED
-    : ITEM_STATUS_STYLE[item.type]) ?? { bg: "#f3f4f6", text: "#888" };
+    : ITEM_STATUS_STYLE[itemPost.type]) ?? { bg: "#f3f4f6", text: "#888" };
   const buildingName =
-    apiBuildings.find((b) => b.id === item.building_id)?.name ?? "";
-  const detailLocation = item.data_address ?? "";
+    apiBuildings.find((b) => b.id === itemPost.building_id)?.name ?? "";
+  const detailLocation = itemPost.data_address ?? "";
   const coordBuilding = BASE_BUILDINGS.find((b) => b.name === buildingName);
   const lat = coordBuilding?.lat;
   const lng = coordBuilding?.lng;
@@ -236,12 +236,12 @@ export default function LostItemDetail() {
               >
                 {isTheftConfirmed
                   ? ITEM_STATUS_LABEL.THEFT_CONFIRMED
-                  : ITEM_TYPE_MAP[item.type]}
+                  : ITEM_TYPE_MAP[itemPost.type]}
               </Text>
             </View>
           </View>
 
-          <Text style={styles.title}>{item.title ?? "제목 없음"}</Text>
+          <Text style={styles.title}>{itemPost.title ?? "제목 없음"}</Text>
 
           <View style={styles.locationCard}>
             <View style={styles.locationIconWrap}>
@@ -255,10 +255,10 @@ export default function LostItemDetail() {
             </View>
             <View style={styles.locationTimeWrap}>
               <Text style={styles.locationTimeLabel}>
-                {item.type === "FOUND" ? "습득" : "분실"}
+                {itemPost.type === "FOUND" ? "습득" : "분실"}
               </Text>
               <Text style={styles.locationTime}>
-                {formatDateTime(item.created_at)}
+                {formatDateTime(itemPost.created_at)}
               </Text>
             </View>
           </View>
@@ -272,10 +272,10 @@ export default function LostItemDetail() {
             </View>
           )}
 
-          {item.description && (
+          {itemPost.description && (
             <View style={styles.descSection}>
               <Text style={styles.sectionLabel}>상세 설명</Text>
-              <Text style={styles.descText}>{item.description}</Text>
+              <Text style={styles.descText}>{itemPost.description}</Text>
             </View>
           )}
 
@@ -309,7 +309,7 @@ export default function LostItemDetail() {
       </ScrollView>
 
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 8 }]}>
-        {item.type === "FOUND" && !isTheftConfirmed && (
+        {itemPost.type === "FOUND" && !isTheftConfirmed && (
           <TouchableOpacity
             style={styles.matchBtn}
             onPress={handleMatchRequest}

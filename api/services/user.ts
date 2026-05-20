@@ -1,5 +1,5 @@
 import axiosInstance from "../client";
-import {UserProfile, UpdateProfileRequest} from "../types";
+import {UserProfile, UpdateProfileRequest, ScanOwnerResult, ApiResponse} from "../types";
 import {PROFILE_ME_URL, USER_ACCOUNT_URL} from "@/constants/url";
 
 export const userService = {
@@ -20,4 +20,9 @@ export const userService = {
         const response = await axiosInstance.delete<void>(USER_ACCOUNT_URL);
         return response.data;
     },
+
+    scanQrCode: async (url: string) => {
+      const response = await axiosInstance.get<ApiResponse<ScanOwnerResult>>(url);
+      return response.data;
+    }
 };

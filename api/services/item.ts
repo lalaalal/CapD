@@ -3,9 +3,9 @@ import {
     ApiResponse,
     CreateItemRequest,
     CreateItemResponse,
-    ItemDetail,
     ItemFilter,
     ItemListResponse,
+    ItemPost,
 } from "../types";
 import {
     ITEMS_CREATE_URL,
@@ -23,8 +23,8 @@ export const itemService = {
         return response.data;
     },
 
-    getItemDetail: async (id: number | string) => {
-        const response = await axiosInstance.get<ApiResponse<ItemDetail>>(
+    getItemPost: async (id: number | string) => {
+        const response = await axiosInstance.get<ApiResponse<ItemPost>>(
             `${ITEMS_LIST_URL}/${id}`, // Swagger docs: /api/items/post/list/{id}
         );
         return response.data;

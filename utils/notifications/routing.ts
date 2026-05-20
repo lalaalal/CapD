@@ -26,6 +26,10 @@ const ROUTING_REGISTRY: Record<string, (data: NotificationData) => Href> = {
     CCTV_FOUND: (data) => ({
         pathname: ROUTES.CCTV_RESULT,
         params: { itemId: Number(data.item_id) }
+    }),
+    QR_SCANNED: (data) => ({
+        pathname: ROUTES.CHAT_ROOM,
+        params: { roomId: Number(data.room_id) }
     })
 }
 

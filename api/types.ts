@@ -60,6 +60,11 @@ export interface UserProfile {
   unreadCount: number;
 }
 
+export interface ScanOwnerResult {
+  owner_id: number;
+  nickname: string;
+}
+
 export interface UpdateProfileRequest {
   nickname: string;
   department: string;
@@ -160,6 +165,7 @@ export interface ItemPost {
   id: number;
   title: string;
   description: string;
+  item_id: number;
   type: ItemType;
   status: string;
   category: string;
@@ -175,8 +181,6 @@ export interface ItemListResponse {
   page: number;
   item_posts: ItemPost[];
 }
-
-export interface ItemDetail extends ItemPost {}
 
 export interface ItemFilter {
   status?: string;
@@ -220,7 +224,7 @@ export interface ChatRoomRecord {
   owner_nickname: string;
   finder_nickname: string;
   item_name: string;
-  item_id?: number;
+  item_id: number;
 }
 
 export interface MessageRecord {
@@ -239,6 +243,10 @@ export interface ListMessagesResult {
 export interface CreateChatRoomRequest {
   item_id: number | null;
   counterpart_id: number;
+}
+
+export interface CreateChatRoomByOwnerRequest {
+  owner_id: number;
 }
 
 export interface CreateChatRoomResult {

@@ -46,11 +46,6 @@ const createChatNotification = async (message: ZoopickRemoteMessage) => {
 
 const NOTIFICATION_DISPLAY_REGISTRY: Record<string, (message: ZoopickRemoteMessage) => void> = {
     CHAT_MESSAGE: createChatNotification,
-    ITEM_RETURNED: createSimpleNotification,
-    MATCH_FOUND: createSimpleNotification,
-    THEFT_SUSPECTED: createSimpleNotification,
-    LOCKER_READY: createSimpleNotification,
-    CCTV_FOUND: createSimpleNotification
 }
 
 export const displayNotification = async (message: ZoopickRemoteMessage) => {
@@ -61,5 +56,7 @@ export const displayNotification = async (message: ZoopickRemoteMessage) => {
     const displayer = NOTIFICATION_DISPLAY_REGISTRY[type];
     if (displayer) {
         displayer(message);
+    } else {
+        createSimpleNotification(message);
     }
 }
