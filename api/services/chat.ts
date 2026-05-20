@@ -3,6 +3,7 @@ import {
     ApiResponse,
     ChatRoomRecord,
     CloseChatRoomRequest,
+    CreateChatRoomByOwnerRequest,
     CreateChatRoomRequest,
     CreateChatRoomResult,
     FindChatRoomResult,
@@ -40,6 +41,14 @@ export const chatService = {
     const res = await client.post<ApiResponse<CreateChatRoomResult>>(
       "/api/chat-rooms/create",
       data,
+    );
+    return res.data;
+  },
+
+  createChatRoomByOwner: async (data: CreateChatRoomByOwnerRequest) => {
+    const res = await client.post<ApiResponse<CreateChatRoomResult>>(
+      "/api/chat-rooms/by-owner",
+      data
     );
     return res.data;
   },
