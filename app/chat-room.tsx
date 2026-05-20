@@ -1,6 +1,7 @@
 import { ApiResponse, ListMessagesResult, MessageRecord } from "@/api/types";
 import { ConnectionStatus } from "@/api/websocket/chatSocket";
 import { fonts } from "@/constants/typography";
+import { ROUTES } from "@/constants/url";
 import { useChatMutations } from "@/hooks/mutations/useChatMutations";
 import {
   CHAT_QUERY_KEYS,
@@ -325,6 +326,19 @@ export default function ChatRoomScreen() {
     sendMessageMutation,
   ]);
 
+  const handleOpenLocker = useCallback(
+    () => {
+      setShowCloseModal(false);
+      const itemId = chatRoom?.item_id;
+      if (itemId) {
+        router.replace({
+          pathname: ROUTES.SCAN,
+          params: { itemId: itemId }
+        });
+      }
+    }, []
+  );
+
   const handleClose = useCallback(
     (reason: "RETURNED" | "ABANDONED", navigateToScan = false) => {
       setShowCloseModal(false);
@@ -597,12 +611,20 @@ export default function ChatRoomScreen() {
                 </TouchableOpacity>
               </>
             ) : (
-              <TouchableOpacity
-                style={styles.modalBtn}
-                onPress={() => handleClose("RETURNED")}
-              >
-                <Text style={styles.modalBtnText}>✅ 물건을 찾아줬어요</Text>
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity
+                  style={styles.modalBtn}
+                  onPress={() => handleOpenLocker()}
+                >
+                  <Text style={styles.modalBtnText}>📦 사물함에서 물건을 넣을게요</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalBtn}
+                  onPress={() => handleClose("RETURNED")}
+                >
+                  <Text style={styles.modalBtnText}>✅ 물건을 찾아줬어요</Text>
+                </TouchableOpacity>
+              </>
             )}
             <TouchableOpacity
               style={[styles.modalBtn, styles.modalBtnGray]}

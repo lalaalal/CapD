@@ -1,11 +1,9 @@
-import { chatService } from "@/api/services/chat";
 import { lockerService } from "@/api/services/locker";
 import { userService } from "@/api/services/user";
 import { ApiResponse, CreateChatRoomResult, ScanOwnerResult } from "@/api/types";
 import { fonts } from "@/constants/typography";
 import { ROUTES } from "@/constants/url";
 import { useChatMutations } from "@/hooks/mutations/useChatMutations";
-import { scanQrCode } from "@/hooks/queries/useUserQueries";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
