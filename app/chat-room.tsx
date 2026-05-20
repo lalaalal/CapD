@@ -616,7 +616,7 @@ export default function ChatRoomScreen() {
                   style={styles.modalBtn}
                   onPress={() => handleOpenLocker()}
                 >
-                  <Text style={styles.modalBtnText}>📦 사물함에서 물건을 넣을게요</Text>
+                  <Text style={styles.modalBtnText}>📦 사물함에 물건을 넣을게요</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.modalBtn}
