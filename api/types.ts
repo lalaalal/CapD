@@ -165,6 +165,7 @@ export interface ItemPost {
   id: number;
   title: string;
   description: string;
+  item_id: number;
   type: ItemType;
   status: string;
   category: string;
@@ -180,8 +181,6 @@ export interface ItemListResponse {
   page: number;
   item_posts: ItemPost[];
 }
-
-export interface ItemDetail extends ItemPost {}
 
 export interface ItemFilter {
   status?: string;
